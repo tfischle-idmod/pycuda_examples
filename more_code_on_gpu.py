@@ -58,10 +58,25 @@ mod = SourceModule("""
 
 class Individual:
     _next_id = 0
-    _alive = pycuda.driver.managed_zeros(shape=MAX_INDIVIDUALS, dtype=numpy.uint32, mem_flags=cuda.mem_attach_flags.GLOBAL)
-    _age = pycuda.driver.managed_zeros(shape=MAX_INDIVIDUALS, dtype=numpy.float32, mem_flags=cuda.mem_attach_flags.GLOBAL)
-    _death_age = pycuda.driver.managed_zeros(shape=MAX_INDIVIDUALS, dtype=numpy.float32, mem_flags=cuda.mem_attach_flags.GLOBAL)
-    _no_of_children = pycuda.driver.managed_zeros(shape=MAX_INDIVIDUALS, dtype=numpy.uint32, mem_flags=cuda.mem_attach_flags.GLOBAL)
+    # _alive = pycuda.driver.managed_zeros(shape=MAX_INDIVIDUALS, dtype=numpy.uint32, mem_flags=cuda.mem_attach_flags.GLOBAL)
+    # _age = pycuda.driver.managed_zeros(shape=MAX_INDIVIDUALS, dtype=numpy.float32, mem_flags=cuda.mem_attach_flags.GLOBAL)
+    # _death_age = pycuda.driver.managed_zeros(shape=MAX_INDIVIDUALS, dtype=numpy.float32, mem_flags=cuda.mem_attach_flags.GLOBAL)
+    # _no_of_children = pycuda.driver.managed_zeros(shape=MAX_INDIVIDUALS, dtype=numpy.uint32, mem_flags=cuda.mem_attach_flags.GLOBAL)
+
+    # _alive = numpy.zeros(shape=MAX_INDIVIDUALS, dtype=numpy.uint32)
+    # _age = numpy.zeros(shape=MAX_INDIVIDUALS, dtype=numpy.float32)
+    # _death_age = numpy.zeros(shape=MAX_INDIVIDUALS, dtype=numpy.float32)
+    # _no_of_children = numpy.zeros(shape=MAX_INDIVIDUALS, dtype=numpy.uint32)
+
+    # _alive = numpy.zeros(shape=MAX_INDIVIDUALS)
+    # _age = numpy.zeros(shape=MAX_INDIVIDUALS)
+    # _death_age = numpy.zeros(shape=MAX_INDIVIDUALS)
+    # _no_of_children = numpy.zeros(shape=MAX_INDIVIDUALS)
+
+    _alive = [0] * MAX_INDIVIDUALS
+    _age = [0] * MAX_INDIVIDUALS
+    _death_age = [0] * MAX_INDIVIDUALS
+    _no_of_children = [0] * MAX_INDIVIDUALS
 
     def __init__(self):
         self._id = Individual.get_next_id()
@@ -139,8 +154,8 @@ if __name__ == '__main__':
 
     dt = 1 / 365
     start_time = timeit.default_timer()
-    for _ in range(duration):
-        Individual.update_all_individuals(dt)
+#    for _ in range(duration):
+#        Individual.update_all_individuals(dt)
 
     print("duration: ", timeit.default_timer() - start_time)
 

@@ -134,19 +134,19 @@ def update():
 
 if __name__ == '__main__':
     init()
-    fill()
-    get_hh()
-
-    print("_initial_households 0:10")
-    for p in _initial_households[0:10]:
-        print(p)
-    update()
-    print("_updated_households 0:10")
-    for p in _updated_households[0:10]:
-        print(p)
-    print(_last_index)
-
-    get_hh()
-    print("_initial_households 0:10")
-    for p in _initial_households[0:10]:
-        print(p)
+#     fill()
+#     get_hh()
+#
+#     print("_initial_households 0:10")
+#     for p in _initial_households[0:10]:
+#         print(p)
+# #    update()
+#     print("_updated_households 0:10")
+    # for p in _updated_households[0:10]:
+    #     print(p)
+    # print(_last_index)
+    #
+    # get_hh()
+    # print("_initial_households 0:10")
+    # for p in _initial_households[0:10]:
+    #     print(p)

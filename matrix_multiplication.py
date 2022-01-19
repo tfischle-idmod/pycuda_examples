@@ -18,7 +18,7 @@ from scipy import sparse
 pool = cp.cuda.MemoryPool(cp.cuda.malloc_managed)
 cp.cuda.set_allocator(pool.malloc)
 
-sizes = [100, 1000, 2000]
+sizes = [100, 1000, 2000, 3000, 10000]
 for size in sizes:
     print("---- Size: ",size, " x ", size, " ----")
     a = cp.ones((size, size), dtype=numpy.float32)
@@ -39,31 +39,61 @@ for size in sizes:
     print("avg duration gpu: ", (timeit.default_timer() - start_time)/10.0)
 
 
-    # numpy
+    # numpy matmul
     a_np = numpy.random.random((size, size))
     b_np = numpy.random.random((size, size))
     result_time = timeit.timeit("c_np = numpy.dot(a_np, b_np)", globals=globals(), number=10)
-    print("duration numpy: ", result_time / 10.0)
+    print("duration numpy dot: ", result_time / 10.0)
+
+    # numpy *
+    a_np = numpy.random.random((size, size))
+    b_np = numpy.random.random((size, size))
+    result_time = timeit.timeit("c_np = a_np * b_np", globals=globals(), number=10)
+    print("duration numpy *: ", result_time / 10.0)
+
+    # numpy * and sum()
+    a_np = numpy.random.random((size, size))
+    b_np = numpy.random.random((size, size))
+    start_time = timeit.default_timer()
+    for i in range(10):
+        c_np = a_np * b_np
+        c_np_sum = numpy.sum(c_np, axis=1)
+    print("avg duration * and sum(): ", (timeit.default_timer() - start_time) / 10.0)
 
 
-    # # numpy int
-    # BLAS, which is used in numpy, only works with float32 and float64 See https://www.benjaminjohnston.com.au/matmul
-    a_np = numpy.random.randint(0, 10, (size, size))
-    b_np = numpy.random.randint(0, 10, (size, size))
-    result_time = timeit.timeit("c_np = numpy.dot(a_np, b_np)", globals=globals(), number=1)
-    print("duration numpy int: ", result_time / 1.0)
+    if False:
+        # # numpy int matmul
+        # BLAS, which is used in numpy, only works with float32 and float64 See https://www.benjaminjohnston.com.au/matmul
+        a_np = numpy.random.randint(0, 10, (size, size))
+        b_np = numpy.random.randint(0, 10, (size, size))
+        result_time = timeit.timeit("c_np = numpy.matmul(a_np, b_np)", globals=globals(), number=1)
+        print("duration numpy matmul int: ", result_time / 1.0)
 
-    # # numpy int32
-    # BLAS, which is used in numpy, only works with float32 and float64 See https://www.benjaminjohnston.com.au/matmul
-    a_np = numpy.random.randint(0, 10, (size, size), dtype=numpy.int32)
-    b_np = numpy.random.randint(0, 10, (size, size), dtype=numpy.int32)
-    result_time = timeit.timeit("c_np = numpy.dot(a_np, b_np)", globals=globals(), number=1)
-    print("duration numpy int32: ", result_time / 1.0)
+        # # numpy int
+        # BLAS, which is used in numpy, only works with float32 and float64 See https://www.benjaminjohnston.com.au/matmul
+        a_np = numpy.random.randint(0, 10, (size, size))
+        b_np = numpy.random.randint(0, 10, (size, size))
+        result_time = timeit.timeit("c_np = a_np * b_np", globals=globals(), number=1)
+        print("duration numpy * int: ", result_time / 1.0)
 
-    # sparse
-    M = sparse.random(size, size, .30)
-    result_time = timeit.timeit("c_sparse = M.dot(M)", globals=globals(), number=10)
-    print("avg duration sparse: ", result_time/10.0)
+        # # numpy int32 matmul
+        # BLAS, which is used in numpy, only works with float32 and float64 See https://www.benjaminjohnston.com.au/matmul
+        a_np = numpy.random.randint(0, 10, (size, size), dtype=numpy.int32)
+        b_np = numpy.random.randint(0, 10, (size, size), dtype=numpy.int32)
+        result_time = timeit.timeit("c_np = numpy.matmul(a_np, b_np)", globals=globals(), number=1)
+        print("duration numpy matmul int32: ", result_time / 1.0)
+
+        # # numpy int32 *
+        # BLAS, which is used in numpy, only works with float32 and float64 See https://www.benjaminjohnston.com.au/matmul
+        a_np = numpy.random.randint(0, 10, (size, size), dtype=numpy.int32)
+        b_np = numpy.random.randint(0, 10, (size, size), dtype=numpy.int32)
+        result_time = timeit.timeit("c_np = a_np * b_np", globals=globals(), number=1)
+        print("duration numpy * int32: ", result_time / 1.0)
+
+        # sparse
+        M = sparse.random(size, size, .30)
+        result_time = timeit.timeit("c_sparse = M.dot(M)", globals=globals(), number=10)
+        print("avg duration sparse: ", result_time/10.0)
 
     print()
 
@@ -92,3 +122,9 @@ for size in sizes:
 # duration numpy int:  27.2362269               # BLAS, which is used in numpy, only works with float32 and float64 See https://www.benjaminjohnston.com.au/matmul
 # duration numpy int32:  27.470195999999994
 # avg duration sparse:  2.313961
+#
+# ---- Size:  6000  x  6000  ----
+# duration gpu:  0.1220581999999979
+# avg duration gpu:  0.06298864999999979
+# duration numpy dot:  1.5756887
+# duration numpy *:  0.17172545000000028
